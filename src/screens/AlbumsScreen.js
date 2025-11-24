@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, FlatList, StyleSheet } from "react-native";
-import { COLORS, RADIUS, SHADOW } from "../styles/theme";
+import { getAlbums } from "../api/jsonplaceholder";
 import Blobs from "../components/Blobs";
 import Header from "../components/Header";
 import AlbumCard from "../components/AlbumCard";
-import { getAlbums } from "../api/jsonplaceholder";
+import { COLORS, RADIUS, SHADOW } from "../styles/theme";
 
-export default function AlbumsScreen({ navigation }) {
+export default function AlbumsScreen({ route, navigation }) {
+  const { userId } = route.params || {};
+
   const [albums, setAlbums] = useState([]);
-  const { userId } = route.params;
 
   useEffect(() => {
-    async function load() {
-      const data = await getAlbumsByUser(userId);
-      setAlbums(data);
+    async function loadAlbums() {
+      const all = await getAlbums();
+      const filtered = userId ? all.filter((a) => a.userId === userId) : all;
+      setAlbums(filtered);
     }
-    load();
-  }, []);
+    loadAlbums();
+  }, [userId]);
 
   return (
     <SafeAreaView style={styles.safe}>
       <Blobs />
-
       <Header title="Álbuns" />
 
       <View style={styles.card}>
@@ -41,10 +42,7 @@ export default function AlbumsScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
+  safe: { flex: 1, backgroundColor: COLORS.background },
   card: {
     width: "90%",
     backgroundColor: COLORS.card,

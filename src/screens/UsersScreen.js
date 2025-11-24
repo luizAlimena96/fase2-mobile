@@ -8,10 +8,10 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import { getUsers } from "../api/jsonplaceholder";
 import { COLORS, RADIUS, SHADOW } from "../styles/theme";
 import Blobs from "../components/Blobs";
 import Header from "../components/Header";
-import { getUsers } from "../api/jsonplaceholder";
 
 export default function UsersScreen({ navigation }) {
   const [users, setUsers] = useState([]);
@@ -19,8 +19,8 @@ export default function UsersScreen({ navigation }) {
 
   useEffect(() => {
     async function load() {
-      const response = await getUsers();
-      setUsers(response);
+      const u = await getUsers();
+      setUsers(u);
     }
     load();
   }, []);
@@ -49,14 +49,16 @@ export default function UsersScreen({ navigation }) {
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.userRow}
-              onPress={() => navigation.navigate("Albums", { userId: item.id })}
+              onPress={() =>
+                // Aqui passamos userId
+                navigation.navigate("Albums", { userId: item.id })
+              }
             >
               <View style={styles.avatar}>
                 <Text style={styles.avatarText}>
-                  {item.name.substring(0, 1)}
+                  {item.name[0].toUpperCase()}
                 </Text>
               </View>
-
               <Text style={styles.name}>{item.name}</Text>
             </TouchableOpacity>
           )}
@@ -67,10 +69,7 @@ export default function UsersScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
+  safe: { flex: 1, backgroundColor: COLORS.background },
   card: {
     width: "90%",
     backgroundColor: COLORS.card,
@@ -82,35 +81,27 @@ const styles = StyleSheet.create({
   },
   search: {
     borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 10,
+    borderColor: COLORS.textLight,
     padding: 12,
-    marginBottom: 18,
-    fontSize: 16,
+    borderRadius: 12,
+    marginBottom: 16,
   },
   userRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderColor: COLORS.borderLight,
+    borderColor: COLORS.textLight,
   },
   avatar: {
-    width: 45,
-    height: 45,
-    borderRadius: 50,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: COLORS.primary,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
-  avatarText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 18,
-  },
-  name: {
-    fontSize: 17,
-    fontWeight: "500",
-  },
+  avatarText: { color: "#fff", fontSize: 18, fontWeight: "600" },
+  name: { fontSize: 16 },
 });
