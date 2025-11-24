@@ -1,4 +1,3 @@
-import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import LoginScreen from "../screens/LoginScreen";
@@ -13,44 +12,18 @@ const Stack = createNativeStackNavigator();
 export default function AppStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Login"
       screenOptions={{
-        headerTitleAlign: "center",
-        headerStyle: { backgroundColor: "#1976D2" },
-        headerTintColor: "#fff",
-        headerTitleStyle: { fontWeight: "600" },
+        headerShown: false,
       }}
+      initialRouteName="Users"
     >
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Signup"
-        component={SignupScreen}
-        options={{ title: "Cadastro" }}
-      />
-      <Stack.Screen
-        name="Albums"
-        component={AlbumsScreen}
-        options={{ title: "Álbuns" }}
-      />
-      <Stack.Screen
-        name="CreateAlbum"
-        component={CreateAlbumScreen}
-        options={{ title: "Criar Álbum" }}
-      />
-      <Stack.Screen
-        name="Album"
-        component={AlbumScreen}
-        options={{ title: "Álbum" }}
-      />
-      <Stack.Screen
-        name="Photo"
-        component={PhotoScreen}
-        options={{ title: "Foto" }}
-      />
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="Users" component={UsersScreen} />
+      <Stack.Screen name="Albums" component={AlbumsScreen} />
+      <Stack.Screen name="CreateAlbum" component={CreateAlbumScreen} />
+      <Stack.Screen name="Album" component={AlbumScreen} />
+      <Stack.Screen name="Photo" component={PhotoScreen} />
     </Stack.Navigator>
   );
 }

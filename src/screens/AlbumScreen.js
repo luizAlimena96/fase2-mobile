@@ -8,13 +8,12 @@ import { getPhotosByAlbum } from "../api/jsonplaceholder";
 
 export default function AlbumScreen({ route, navigation }) {
   const { albumId } = route.params;
-
   const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
     async function load() {
-      const result = await getPhotosByAlbum(albumId);
-      setPhotos(result);
+      const data = await getPhotosByAlbum(albumId);
+      setPhotos(data);
     }
     load();
   }, []);
@@ -28,17 +27,13 @@ export default function AlbumScreen({ route, navigation }) {
         <FlatList
           data={photos}
           numColumns={2}
-          keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
             <PhotoTile
               photo={item}
-              onPress={() =>
-                navigation.navigate("Photo", {
-                  photo: item,
-                })
-              }
+              onPress={() => navigation.navigate("Photo", { photo: item })}
             />
           )}
+          keyExtractor={(item) => String(item.id)}
           columnWrapperStyle={{ justifyContent: "space-between" }}
         />
       </View>
@@ -47,17 +42,14 @@ export default function AlbumScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
+  safe: { flex: 1, backgroundColor: COLORS.background },
   card: {
     width: "90%",
-    flex: 1,
     backgroundColor: COLORS.card,
     borderRadius: RADIUS.large,
     padding: 24,
     alignSelf: "center",
+    flex: 1,
     ...SHADOW.neuSoft,
   },
 });

@@ -1,14 +1,36 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../styles/theme";
 
 export default function Header({ title }) {
+  const navigation = useNavigation();
+  const canGoBack = navigation.canGoBack();
+
   return (
     <View style={styles.container}>
-      {/* LOGO */}
+      {canGoBack && (
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons
+            name={Platform.OS === "ios" ? "chevron-back" : "arrow-back"}
+            size={26}
+            color={COLORS.textDark}
+          />
+        </TouchableOpacity>
+      )}
+
       <Text style={styles.logo}>PhotoYou</Text>
 
-      {/* TÍTULO DA TELA */}
       {title && (
         <View style={styles.titleWrapper}>
           <Text style={styles.title}>{title}</Text>
@@ -20,44 +42,46 @@ export default function Header({ title }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 26,
+    marginBottom: 24,
+    paddingTop: 10,
+    paddingBottom: 6,
     alignItems: "center",
     justifyContent: "center",
   },
 
   logo: {
-    fontSize: 40,
+    fontSize: 38,
     fontWeight: "800",
     color: COLORS.textDark,
-    letterSpacing: 1.2,
-    marginBottom: 18,
-
-    // sombra suave para dar profundidade
-    textShadowColor: "rgba(0,0,0,0.10)",
+    textShadowColor: "rgba(0,0,0,0.08)",
     textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 8,
+    textShadowRadius: 6,
+  },
+
+  backButton: {
+    position: "absolute",
+    left: 20,
+    top: 14,
+    padding: 5,
   },
 
   titleWrapper: {
+    marginTop: 12,
     backgroundColor: COLORS.card,
     paddingVertical: 8,
     paddingHorizontal: 28,
     borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-
-    // glow colorido mais elegante e suave
     shadowColor: COLORS.purpleGlow,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.45,
-    shadowRadius: 20,
-    elevation: 3,
+    shadowOpacity: 0.4,
+    shadowRadius: 18,
+    elevation: 4,
   },
 
   title: {
-    fontSize: 19,
     fontWeight: "700",
+    fontSize: 19,
     color: COLORS.textDark,
-    letterSpacing: 0.3,
+    letterSpacing: 0.4,
   },
 });
