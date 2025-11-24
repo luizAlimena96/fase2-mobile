@@ -7,8 +7,9 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
-import { getUsers } from "../api/jsonplaceholder";
+import { getUsers, searchUsers } from "../api/jsonplaceholder";
 import { COLORS, RADIUS, SHADOW } from "../styles/theme";
 import Blobs from "../components/Blobs";
 import Header from "../components/Header";
@@ -16,17 +17,28 @@ import Header from "../components/Header";
 export default function UsersScreen({ navigation }) {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      const u = await getUsers();
-      setUsers(u);
-    }
-    load();
+    loadUsers();
   }, []);
 
-  const filtered = users.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase())
+  async function loadUsers() {
+    try {
+      setLoading(true);
+      const usersData = await getUsers();
+      setUsers(usersData);
+    } catch (error) {
+      console.error("Error loading users:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -36,33 +48,40 @@ export default function UsersScreen({ navigation }) {
 
       <View style={styles.card}>
         <TextInput
-          placeholder="Buscar usuário..."
+          placeholder="Buscar usuário por nome ou email..."
           placeholderTextColor={COLORS.textLight}
           value={search}
           onChangeText={setSearch}
           style={styles.search}
         />
 
-        <FlatList
-          data={filtered}
-          keyExtractor={(item) => String(item.id)}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.userRow}
-              onPress={() =>
-                // Aqui passamos userId
-                navigation.navigate("Albums", { userId: item.id })
-              }
-            >
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>
-                  {item.name[0].toUpperCase()}
-                </Text>
-              </View>
-              <Text style={styles.name}>{item.name}</Text>
-            </TouchableOpacity>
-          )}
-        />
+        {loading ? (
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        ) : (
+          <FlatList
+            data={filteredUsers}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.userRow}
+                onPress={() =>
+                  navigation.navigate("Albums", { userId: item.id })
+                }
+              >
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>
+                    {item.name[0].toUpperCase()}
+                  </Text>
+                </View>
+                <View style={styles.userInfo}>
+                  <Text style={styles.name}>{item.name}</Text>
+                  <Text style={styles.email}>{item.email}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -85,13 +104,14 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
+    backgroundColor: "#F9F9F9",
   },
   userRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderColor: COLORS.textLight,
+    borderColor: "#F0F0F0",
   },
   avatar: {
     width: 44,
@@ -103,5 +123,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   avatarText: { color: "#fff", fontSize: 18, fontWeight: "600" },
-  name: { fontSize: 16 },
+  userInfo: { flex: 1 },
+  name: { fontSize: 16, fontWeight: "600", marginBottom: 4 },
+  email: { fontSize: 14, color: COLORS.textLight },
 });

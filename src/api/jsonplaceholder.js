@@ -10,6 +10,11 @@ export const getAlbums = async () => {
   return r.data;
 };
 
+export const getAlbumsByUser = async (userId) => {
+  const r = await api.get(`/albums?userId=${userId}`);
+  return r.data;
+};
+
 export const getPhotosByAlbum = async (albumId) => {
   const r = await api.get(`/photos?albumId=${albumId}`);
   return r.data;
@@ -18,4 +23,11 @@ export const getPhotosByAlbum = async (albumId) => {
 export const getUsers = async () => {
   const r = await api.get("/users");
   return r.data;
+};
+
+export const searchUsers = async (query) => {
+  const users = await getUsers();
+  return users.filter((user) =>
+    user.name.toLowerCase().includes(query.toLowerCase())
+  );
 };
